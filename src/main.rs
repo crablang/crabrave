@@ -15,14 +15,14 @@ enum Token {
 fn lexer(code: &str) -> Vec<Token> {
     code.chars()
         .filter_map(|c| match c {
-            '🐙' => Some(Token::IncrementPointer), // >
-            '🦑' => Some(Token::DecrementPointer), // <
-            '🦀' => Some(Token::IncrementData),    // +
-            '🦞' => Some(Token::DecrementData),    // -
-            '🐚' => Some(Token::Output),           // .
-            '🦐' => Some(Token::Input),            // ,
-            '🐋' => Some(Token::LoopStart),        // [
-            '🐬' => Some(Token::LoopEnd),          // ]
+            '🐙' | '>' => Some(Token::IncrementPointer), // >
+            '🦑' | '<' => Some(Token::DecrementPointer), // <
+            '🦀' | '+' => Some(Token::IncrementData),    // +
+            '🦞' | '-' => Some(Token::DecrementData),    // -
+            '🐚' | '.' => Some(Token::Output),           // .
+            '🦐' | ',' => Some(Token::Input),            // ,
+            '🐋' | '[' => Some(Token::LoopStart),        // [
+            '🐬' | ']' => Some(Token::LoopEnd),          // ]
             _ => None,
         })
         .collect()
@@ -40,8 +40,8 @@ fn main() {
         match token {
             Token::IncrementPointer => crab.push_str("ptr += 1;"),
             Token::DecrementPointer => crab.push_str("ptr -= 1;"),
-            Token::IncrementData => crab.push_str("data[ptr] += 1;"),
-            Token::DecrementData => crab.push_str("data[ptr] -= 1;"),
+            Token::IncrementData => crab.push_str("data[ptr] = data[ptr].wrapping_add(1);"),
+            Token::DecrementData => crab.push_str("data[ptr] = data[ptr].wrapping_sub(1);"),
             Token::Output => crab.push_str("print!(\"{}\", data[ptr] as char);"),
             Token::Input => {
                 crab.push_str("data[ptr] = std::io::stdin().bytes().next().unwrap().unwrap();")
