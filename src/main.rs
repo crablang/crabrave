@@ -1,4 +1,8 @@
-use std::{env, fs, process::Command};
+use std::{
+    env,
+    fs::{self, canonicalize},
+    process::Command,
+};
 
 #[derive(Debug, PartialEq)]
 enum Token {
@@ -62,21 +66,38 @@ fn main() {
         return;
     }
 
-    let brainfuck = fs::read_to_string(&args[1]).expect("Couldn't read the brainfuck!");
+    let input_file = &args[1];
+    let brainfuck = fs::read_to_string(input_file).expect("Couldn't read the brainfuck!");
     let tokens = lexer(&brainfuck);
     let crab = translate_to_crab(&tokens);
-    fs::write("transpiled.rs", &crab).expect("error making crab file!");
+    let basename = std::path::Path::new(input_file)
+        .file_stem()
+        .to_owned()
+        .unwrap()
+        .to_string_lossy()
+        .to_string();
+    let rs_filename = basename.clone() + ".rs";
+
+    fs::write(&rs_filename, crab).expect("error making crab file!");
 
     let output = Command::new("crabc")
-        .arg("transpiled.rs")
+        .arg(&*rs_filename)
         .arg("-o")
-        .arg("compiled")
+        .arg(&basename)
         .output()
         .expect("couldnt compile the transpiled crab to an executable!");
 
     if !output.status.success() {
         eprintln!("ERRRRRR: {}", String::from_utf8_lossy(&output.stderr));
     } else {
-        println!("we made it!");
+        // remove the crab file
+        let _ = fs::remove_file(rs_filename);
+        println!(
+            "successfully compiled to {}",
+            canonicalize(basename)
+                .unwrap()
+                .to_string_lossy()
+                .to_string()
+        );
     }
 }
