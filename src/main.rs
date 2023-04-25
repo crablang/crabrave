@@ -34,12 +34,14 @@ fn lexer(code: &str) -> Vec<Token> {
 
 fn translate_to_crab(tokens: &[Token]) -> String {
     let mut crab = r#"
+use std::io::{stdin, Read};
 fn main() {
-    const TAPESIZE: usize = 69000;
-    let mut data = [0u8; TAPESIZE];
+    const SIZE: usize = %SIZE%;
+    let mut data = [0u8; SIZE];
     let mut ptr = 0;
 "#
     .to_string();
+
     for token in tokens {
         match token {
             Token::IncrementPointer => crab.push_str("ptr += 1;"),
@@ -47,9 +49,7 @@ fn main() {
             Token::IncrementData => crab.push_str("data[ptr] = data[ptr].wrapping_add(1);"),
             Token::DecrementData => crab.push_str("data[ptr] = data[ptr].wrapping_sub(1);"),
             Token::Output => crab.push_str("print!(\"{}\", data[ptr] as char);"),
-            Token::Input => {
-                crab.push_str("data[ptr] = std::io::stdin().bytes().next().unwrap().unwrap();")
-            }
+            Token::Input => crab.push_str("data[ptr] = stdin().bytes().next().unwrap().unwrap();"),
             Token::LoopStart => crab.push_str("while data[ptr] != 0 {"),
             Token::LoopEnd => crab.push_str("}"),
         }
@@ -61,23 +61,30 @@ fn main() {
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    if args.len() != 2 {
-        eprintln!("Usage: {} <file>", args[0]);
+    if args.len() < 2 {
+        eprintln!("Usage: {} <file> [tapesize]", args[0]);
         return;
     }
 
     let input_file = &args[1];
+
     let brainfuck = fs::read_to_string(input_file).expect("Couldn't read the brainfuck!");
     let tokens = lexer(&brainfuck);
-    let crab = translate_to_crab(&tokens);
+
+    let mut tape_size = "69420";
+    if args.len() > 2 && args[2].as_str().parse::<usize>().is_ok() {
+        tape_size = &args[2];
+    }
+
+    let crab = translate_to_crab(&tokens).replace("%SIZE%", tape_size);
     let basename = std::path::Path::new(input_file)
         .file_stem()
         .to_owned()
         .unwrap()
         .to_string_lossy()
         .to_string();
-    let rs_filename = basename.clone() + ".rs";
 
+    let rs_filename = basename.clone() + ".rs";
     fs::write(&rs_filename, crab).expect("error making crab file!");
 
     let output = Command::new("crabc")
