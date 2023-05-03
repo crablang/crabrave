@@ -1,29 +1,31 @@
-# CrabRave
+## CrabRave Programming Language
 
-CrabRave is a programming language based on Brainfuck that uses crab and sea-life emoji instead of boring characters.
+![CrabRave](https://user-images.githubusercontent.com/19922556/235866842-ad037e1e-e345-45fe-b7fe-626df3468ca5.jpg)
 
-It first transpiles to [`Crab`](https://github.com/crablang/crab), which is then compiled to a binary executable.
+CrabRave is a fun and unique programming language based on Brainfuck, which utilizes crab and sea-life emojis as its syntax rather than traditional characters. This language adds a creative and engaging touch to programming.
 
-## Usage
+The process involves transpiling CrabRave code to the Crab intermediate language, which is then compiled into a binary executable.
 
-### Requirements
+### Usage
 
-You'll need the `crabc` compiler installed to use CrabRave. On Unix it can be installed with the CrabLang toolchain:
+#### Requirements
+
+To use CrabRave, you will need to have the `crabc` compiler installed. For Unix systems, it can be easily installed with the CrabLang toolchain by running the following command:
 
 ```sh
 sh <(curl https://install.crablang.org -L)
 ```
 
-### Compiling CrabRave
+#### Compiling CrabRave
 
-After cloning the repo, you can compile a CrabRave file using the following command:
+Once you have cloned the CrabRave repository, you can compile a CrabRave file using the following command:
 
 ```sh
 crabgo run -- /path/to/file.rave
 ```
 
-Then run the file named "compiled".
+After compilation, you can execute the output file named "compiled".
 
-## Notes
+### Important Note
 
-Please don't actually use CrabRave.
+Although CrabRave offers a novel and entertaining programming experience, it is not recommended for serious or professional use. Enjoy it as a creative programming exercise!
