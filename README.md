@@ -12,8 +12,7 @@ The process involves transpiling CrabRave code to the Crab intermediate language
 
 To use CrabRave, you will need to have the `crabc` compiler installed. For Unix systems, it can be easily installed with the CrabLang toolchain by running the following command:
 
-```
-shCopy code
+```sh
 sh <(curl https://install.crablang.org -L)
 ```
 
@@ -21,8 +20,7 @@ sh <(curl https://install.crablang.org -L)
 
 Once you have cloned the CrabRave repository, you can compile a CrabRave file using the following command:
 
-```
-shCopy code
+```sh
 crabgo run -- /path/to/file.rave
 ```
 
